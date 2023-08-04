@@ -3,6 +3,9 @@ import { Octokit } from "@octokit/core";
 import { paginateRest } from "@octokit/plugin-paginate-rest";
 import core from "@actions/core";
 
+// XXX: Boolean(process.env['CI']) // check if running in a Github Action workflow
+
+// TODO: read from action inputs
 const TARGET_TOPICS = [
   "api",
   "automation",
@@ -13,10 +16,10 @@ const TARGET_TOPICS = [
   "theme",
 ];
 
+// TODO: read from action inputs
 const REPOS_URL = "GET /users/metaory/repos";
 
-const [, , mode] = process.argv;
-const isDev = mode === "dev";
+const [, , mode = "prod"] = process.argv;
 
 const auth = process.env["GH_PAT"];
 const username = "metaory";
@@ -28,18 +31,21 @@ const read = async (path) =>
 
 async function run() {
   try {
+    console.log(` ==> running mode: ${mode}`);
+
     const octokit = new (Octokit.plugin(paginateRest))({ auth });
 
-    const res = isDev
-      ? await read("tmp/data.json")
-      : await octokit.paginate(REPOS_URL, { username });
+    const res =
+      mode === "dev"
+        ? await read("tmp/data.json")
+        : await octokit.paginate(REPOS_URL, { username });
 
-    isDev === false && (await write(res, "tmp/data.json"));
+    mode === "prod" && (await write(res, "tmp/data.json"));
 
-    console.log(`found ${res.length} repos`);
+    console.log(" ==> found", res.length, "repos");
 
     const reduced = res
-      .filter((x) => x.private === false && x.fork === false)
+      .filter((x) => x.fork === false)
       .reduce(
         (acc, cur) => {
           const {
@@ -84,6 +90,8 @@ async function run() {
     console.log("outcome:", outcome);
 
     write(outcome, "tmp/outcome.json");
+
+    // TODO: updateProfileReadme(outcome)
   } catch (error) {
     core.setFailed(error.message);
   }
