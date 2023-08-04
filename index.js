@@ -19,10 +19,10 @@ const TARGET_TOPICS = [
 const [, , mode = "prod"] = process.argv;
 
 const auth = process.env["GH_PAT"];
-const username = "metaory";
 const email = "metaory@gmail.com";
-const owner = username;
 const repo = "git-playground";
+const username = "metaory";
+const owner = username;
 
 const octokit = new (Octokit.plugin(paginateRest))({ auth });
 
@@ -111,18 +111,21 @@ const reduceRepos = (repos) => {
 };
 
 const generateChanges = (outcome) =>
-  TARGET_TOPICS.reduce((acc, cur) => {
-    acc.push(...["", "", `# ${cur.toUpperCase()}`, ""]);
+  TARGET_TOPICS.reduce(
+    (acc, cur) => {
+      acc.push(...["", `# ${cur.toUpperCase()}`, ""]);
 
-    acc.push("| Name  | Description | Stargazers | Language | Update |");
-    acc.push("| ----- | ----------- | ---------- | -------- | ------ |");
+      acc.push("| Name  | Description | Stargazers | Language | Update |");
+      acc.push("| ----- | ----------- | ---------- | -------- | ------ |");
 
-    outcome[cur].forEach(({ name, desc, stars, language, update }) => {
-      acc.push(`| ${name} | ${desc} | ${stars} | ${language} | ${update} |`);
-    });
+      outcome[cur].forEach(({ name, desc, stars, language, update }) => {
+        acc.push(`| ${name} | ${desc} | ${stars} | ${language} | ${update} |`);
+      });
 
-    return acc;
-  }, []);
+      return acc;
+    },
+    [""]
+  );
 
 const mergeChanges = (originalLines, modifiedLines) =>
   originalLines
@@ -166,14 +169,20 @@ async function run() {
   try {
     console.log(` ==> running mode: ${mode}`);
 
+    const testUsername = core.getInput("username");
+    console.log("testUsername:", testUsername);
+
+    const testTopics = core.getInput("topics");
+    console.log("testTopics:", testTopics);
+
     const repos = await getRepos();
 
     console.log(" ==> found", repos.length, "repos");
 
-    mode === "prod" && (await write(repos, "tmp/repos.json"));
+    // mode === "prod" && (await write(repos, "tmp/repos.json"));
 
     const outcome = reduceRepos(repos);
-    write(outcome, "tmp/outcome.json");
+    // write(outcome, "tmp/outcome.json");
 
     const modifiedLines = generateChanges(outcome);
 
@@ -182,7 +191,7 @@ async function run() {
     const originalLines = content.split("\n");
 
     const modified = mergeChanges(originalLines, modifiedLines);
-    write(modified, "tmp/modified.md");
+    // write(modified, "tmp/modified.md");
 
     await updateFile("README.md", modified, sha);
   } catch (error) {
