@@ -21,7 +21,7 @@ const [, , mode = "prod"] = process.argv;
 
 const auth = process.env["GH_PAT"];
 const email = core.getInput("email");
-const repo = core.getInput("repo");
+const repo = core.getInput("repository");
 const username = core.getInput("username");
 const targetTopics = core.getInput("topics").split("\n");
 const owner = username;
@@ -164,7 +164,7 @@ const mergeChanges = (originalLines, modifiedLines) =>
     .join("\n");
 
 const getRepos = () => {
-  const REPOS_URL = "GET /users/metaory/repos"; // TODO: read from action inputs
+  const REPOS_URL = `GET /users/${username}/repos`;
   return mode === "dev"
     ? read("tmp/repos.json")
     : octokit.paginate(REPOS_URL, { username });
