@@ -8,17 +8,17 @@ const MONTH_MILLISECONDS = 1_000 * 60 * 60 * 24 * 30;
 const RTF = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
 const { GITHUB_REPOSITORY, GH_PAT: auth } = process.env;
-const [OWNER, REPOSITORY] = GITHUB_REPOSITORY.split("/");
+const [owner, repository] = GITHUB_REPOSITORY.split("/");
 
 // INPUTS ---
+
 const email = core.getInput("EMAIL", { required: true });
 const targetTopics = core
   .getInput("TOPICS", { required: true })
   .split("\n")
   .sort();
-const repo = core.getInput("REPOSITORY") || REPOSITORY;
-const username = core.getInput("USERNAME") || OWNER;
-const owner = OWNER;
+const repo = core.getInput("REPOSITORY") || repository;
+const username = core.getInput("USERNAME") || owner;
 
 // GitHub API ---
 
