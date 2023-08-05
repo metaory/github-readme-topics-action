@@ -1,7 +1,7 @@
 {
-  "name": "github-profile-pinned-action",
+  "name": "github-readme-topics-action",
   "version": "1.0.0",
-  "description": "Action to generate GitHub profile readme repos pin based on Topics",
+  "description": "GitHub Action to update GitHub profile README.md with categorized repos based on their Topics",
   "main": "index.js",
   "type": "module",
   "scripts": {

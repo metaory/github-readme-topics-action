@@ -1,5 +1,5 @@
 name: github-profile-pinned-action
-description: Update README.md with repos categorized by topic
+description: Update GitHub profile README.md with categorized repos based on their Topics
 inputs:
   topics:
     description: list of topics to categorize by, separated by line breaks

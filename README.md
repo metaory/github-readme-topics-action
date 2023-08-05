@@ -1,12 +1,61 @@
-# GitHub Profile Pinned Action
+# GitHub Profile Readme Topics Action
 
-Action to generate GitHub profile readme repos pin based on Topics
+GitHub Action to update GitHub profile README.md with categorized repos based on their Topics
 
-## Usage
+---
 
-Install the dependencies
+<p align="center">
+  <img src="./assets/screenshot.png" width="600" />
+</p>
 
-```bash
-npm install
-# TODO
+---
+
+## Instructions
+
+- Add this comment somewhere in your `README.md`. You can find an example [here](https://github.com/metaory/metaory/blob/master/README.md?plain=1#L37).
+
 ```
+<!--START_SECTION:topics-->
+<!--END_SECTION:topics-->
+```
+
+- It's the time to create a workflow file.
+
+`.github/workflows/readme-topics.yml`
+
+```yml
+name: readme-topics
+run-name: Update README.md with repos categorized by topic
+on:
+  schedule:
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: metaory/github-profile-pinned-action@master
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }} # your personal-access-tokens with write permission
+        with:
+          username: metaory # OPTIONAL; the committer username, defaults to current user (GITHUB_ACTOR)
+          repository: playground # OPTIONAL; the repository name to update its readme, defaults to current repository (GITHUB_REPOSITORY)
+          email: metaory@gmail.com # REQUIRED; the committer email address
+          topics: |- # REQUIRED; list of topics to group by
+            api
+            automation
+            challenge
+            cli
+            github-actions
+            npm-package
+            theme
+```
+
+The above job runs every one week, you can change it as you wish based on the [cron syntax](https://jasonet.co/posts/scheduled-actions/#the-cron-syntax).
+
+---
+
+## TODOs
+
+- [ ] format date (update column)
+- [ ] add links (name column)

@@ -11749,17 +11749,6 @@ function fixResponseChunkedTransferBadEnding(request, errorCallback) {
 
 // XXX: Boolean(process.env['CI']) // check if running in a Github Action workflow
 
-// TODO: read from action inputs
-// const targetTopics = [
-// 	"api",
-// 	"automation",
-// 	"challenge",
-// 	"cli",
-// 	"github-actions",
-// 	"npm-package",
-// 	"theme",
-// ];
-
 const [, , mode = "prod"] = process.argv;
 
 const { GITHUB_REPOSITORY, GITHUB_ACTOR, GH_PAT: auth } = process.env;
@@ -11785,7 +11774,7 @@ const write = (data, path) =>
 const read = async (path) =>
   JSON.parse(await (0,promises_namespaceObject.readFile)(path, { encoding: "utf8" }));
 
-function updateFile(path, content, sha, message = "update") {
+function updateFile(path, content, sha, message = "updated readme topics") {
   return octokit.request(`PUT /repos/${owner}/${repo}/contents/${path}`, {
     owner,
     repo,
