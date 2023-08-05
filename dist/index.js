@@ -11750,26 +11750,24 @@ function fixResponseChunkedTransferBadEnding(request, errorCallback) {
 // XXX: Boolean(process.env['CI']) // check if running in a Github Action workflow
 
 // TODO: read from action inputs
-const TARGET_TOPICS = [
-  "api",
-  "automation",
-  "challenge",
-  "cli",
-  "github-actions",
-  "npm-package",
-  "theme",
-];
+// const targetTopics = [
+// 	"api",
+// 	"automation",
+// 	"challenge",
+// 	"cli",
+// 	"github-actions",
+// 	"npm-package",
+// 	"theme",
+// ];
 
 const [, , mode = "prod"] = process.argv;
 
 const auth = process.env["GH_PAT"];
-const email = "metaory@gmail.com";
-const repo = "git-playground";
-const username = "metaory";
+const email = core.getInput("email");
+const repo = core.getInput("repo");
+const username = core.getInput("username");
+const targetTopics = core.getInput("topics").split("\n");
 const owner = username;
-
-const testUsername = core.getInput("username");
-const testTopics = core.getInput("topics").split("\n");
 
 const octokit = new (dist_node.Octokit.plugin(plugin_paginate_rest_dist_node.paginateRest))({
   auth,
@@ -11833,7 +11831,7 @@ const reduceRepos = (repos) => {
 
         const { topic, match } = topics.reduce(
           (_acc, _cur) => {
-            const topic = TARGET_TOPICS.find((x) => x === _cur);
+            const topic = targetTopics.find((x) => x === _cur);
             if (topic && _acc.match === false) return { topic, match: true };
             return _acc;
           },
@@ -11851,17 +11849,17 @@ const reduceRepos = (repos) => {
 
         return acc;
       },
-      TARGET_TOPICS.reduce((acc, cur) => ({ ...acc, [cur]: [] }), {})
+      targetTopics.reduce((acc, cur) => ({ ...acc, [cur]: [] }), {})
     );
 
-  return TARGET_TOPICS.reduce((acc, cur) => {
+  return targetTopics.reduce((acc, cur) => {
     acc[cur] = reduced[cur].sort((a, b) => b.stars - a.stars);
     return acc;
   }, {});
 };
 
 const generateChanges = (outcome) =>
-  TARGET_TOPICS.reduce(
+  targetTopics.reduce(
     (acc, cur) => {
       acc.push(...["", `# ${cur.toUpperCase()}`, ""]);
 
