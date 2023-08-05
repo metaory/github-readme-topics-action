@@ -34,7 +34,7 @@ jobs:
   generate-topics:
     runs-on: ubuntu-latest
     steps:
-      - uses: metaory/github-readme-topics-action@master
+      - uses: metaory/github-readme-topics-action@v1
         env:
           GH_PAT: ${{ secrets.GH_PAT }} # your personal-access-tokens with write permission
         with:
