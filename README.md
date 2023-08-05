@@ -19,7 +19,7 @@ GitHub Action to update GitHub profile README.md with categorized repos based on
 <!--END_SECTION:topics-->
 ```
 
-- It's the time to create a workflow file.
+- Create a workflow file.
 
 `.github/workflows/readme-topics.yml`
 
