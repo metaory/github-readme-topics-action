@@ -135,7 +135,7 @@ const generateChanges = (outcome) =>
 
       return acc;
     },
-    [""]
+    ["", "## Topics", ""]
   );
 
 const mergeChanges = (originalLines, modifiedLines) =>
