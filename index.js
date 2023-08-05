@@ -70,7 +70,7 @@ async function getFile(path, contentType = "json") {
 
 const reduceRepos = (repos) => {
   const reduced = repos
-    .filter((x) => x.fork === false)
+    .filter((x) => x.fork === false && x.archived === false)
     .reduce(
       (acc, cur) => {
         const {
