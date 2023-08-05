@@ -174,9 +174,7 @@ async function run() {
   try {
     console.log(` ==> running mode: ${mode}`);
 
-    console.log(">> testUsername:", testUsername);
-
-    console.log(">> testTopics:", testTopics);
+    console.log(">> inputs:", { username, email, repo, targetTopics });
 
     const repos = await getRepos();
 
