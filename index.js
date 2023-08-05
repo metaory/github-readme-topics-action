@@ -125,7 +125,10 @@ const generateChanges = (outcome) =>
       outcome[cur].forEach(({ name, desc, stars, language, update }) => {
         const link = `[${name}](https://github.com/${owner}/${name})`;
         const ago = RTF.format(
-          Math.round((timestamp - new Date().getTime()) / DAY_MILLISECONDS),
+          Math.round(
+            (new Date(update).getTime() - new Date().getTime()) /
+              DAY_MILLISECONDS
+          ),
           "day"
         );
         acc.push(`| ${link} | ${desc} | ${stars} | ${language} | ${ago} |`);
