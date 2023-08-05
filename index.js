@@ -6,14 +6,10 @@ import fetch from "node-fetch";
 
 // XXX: Boolean(process.env['CI']) // check if running in a Github Action workflow
 
-const [, , mode = "prod"] = process.argv;
-const isDev = mode === "dev";
+const [, , mode] = process.argv;
 
-const MONTH_MILLISECONDS = 1000 * 60 * 60 * 24 * 30;
-const RTF = new Intl.RelativeTimeFormat("en", {
-  numeric: "auto",
-  style: "short",
-});
+const MONTH_MILLISECONDS = 1_000 * 60 * 60 * 24 * 30;
+const RTF = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
 const { GITHUB_REPOSITORY, GH_PAT: auth } = process.env;
 const [OWNER, REPOSITORY] = GITHUB_REPOSITORY.split("/");
@@ -29,15 +25,15 @@ const octokit = new (Octokit.plugin(paginateRest))({
   request: { fetch },
 });
 
-const write = (data, path) =>
-  isDev &&
-  writeFile(
-    path,
-    typeof data === "object" ? JSON.stringify(data, null, 2) : data
-  );
+// const write = (data, path) =>
+//   mode === "dev" &&
+//   writeFile(
+//     path,
+//     typeof data === "object" ? JSON.stringify(data, null, 2) : data
+//   );
 
-const read = async (path) =>
-  JSON.parse(await readFile(path, { encoding: "utf8" }));
+// const read = async (path) =>
+//   JSON.parse(await readFile(path, { encoding: "utf8" }));
 
 function updateFile(path, content, sha, message = "updated readme topics") {
   return octokit.request(`PUT /repos/${owner}/${repo}/contents/${path}`, {
