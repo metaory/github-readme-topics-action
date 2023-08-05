@@ -11921,6 +11921,7 @@ async function run() {
 
     const testTopics = core.getInput("topics");
     console.log("testTopics:", testTopics);
+    console.log("auth:", auth);
 
     const repos = await getRepos();
 
