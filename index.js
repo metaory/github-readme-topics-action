@@ -120,7 +120,8 @@ const generateChanges = (outcome) =>
       acc.push("| ----- | ----------- | ---------- | -------- | ------ |");
 
       outcome[cur].forEach(({ name, desc, stars, language, update }) => {
-        acc.push(`| ${name} | ${desc} | ${stars} | ${language} | ${update} |`);
+        const link = `[${name}](https://github.com/${owner}/${name})`;
+        acc.push(`| ${link} | ${desc} | ${stars} | ${language} | ${update} |`);
       });
 
       return acc;
@@ -186,7 +187,7 @@ async function run() {
     // write(modified, "tmp/modified.md");
 
     await updateFile("README.md", modified, sha);
-    core.info("✓ updated README.md");
+    core.info("updated README.md ✓");
   } catch (error) {
     console.error(error);
     core.setFailed(error.message);
