@@ -14,5 +14,5 @@ inputs:
     description: list of topics to categorize by, separated by line breaks
     required: true
 runs:
-  using: "node20"
+  using: "node16"
   main: "dist/index.js"

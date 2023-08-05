@@ -1,4 +1,5 @@
 node_modules
 tmp/*.json
 tmp/*.md
+tmp/*.js
 
