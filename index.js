@@ -101,11 +101,11 @@ const reduceRepos = (repos) => {
   );
 };
 
-// Get relative months passed since date
 const MONTH_MILLISECONDS = 1_000 * 60 * 60 * 24 * 30;
 
 const RTF = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
+// Get relative months passed since date
 const getRelativeTimeDiff = (date) =>
   RTF.format(
     Math.round(
