@@ -9,7 +9,7 @@ import fetch from "node-fetch";
 const [, , mode = "prod"] = process.argv;
 const isDev = mode === "dev";
 
-const DAY_MILLISECONDS = 1000 * 60 * 60 * 24;
+const MONTH_MILLISECONDS = 1000 * 60 * 60 * 24 * 30;
 const RTF = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
 const { GITHUB_REPOSITORY, GH_PAT: auth } = process.env;
@@ -127,9 +127,9 @@ const generateChanges = (outcome) =>
         const ago = RTF.format(
           Math.round(
             (new Date(update).getTime() - new Date().getTime()) /
-              DAY_MILLISECONDS
+              MONTH_MILLISECONDS
           ),
-          "day"
+          "month"
         );
         acc.push(`| ${link} | ${desc} | ${stars} | ${language} | ${ago} |`);
       });
