@@ -104,6 +104,15 @@ const reduceRepos = (repos) => {
   );
 };
 
+// Get relative months passed since date
+const getRelativeTimeDiff = (date) =>
+  RTF.format(
+    Math.round(
+      (new Date(date).getTime() - new Date().getTime()) / MONTH_MILLISECONDS
+    ),
+    "month"
+  );
+
 // Reduce to produce the modified changes to be inserted later
 const generateChanges = (outcome) =>
   targetTopics.reduce(
@@ -115,13 +124,7 @@ const generateChanges = (outcome) =>
 
       outcome[cur].forEach(({ name, desc, stars, language, update }) => {
         const link = `[${name}](https://github.com/${owner}/${name})`;
-        const ago = RTF.format(
-          Math.round(
-            (new Date(update).getTime() - new Date().getTime()) /
-              MONTH_MILLISECONDS
-          ),
-          "month"
-        );
+        const ago = getRelativeTimeDiff(update);
         acc.push(`| ${link} | ${desc} | ${stars} | ${language} | ${ago} |`);
       });
 
