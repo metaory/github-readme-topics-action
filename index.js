@@ -4,16 +4,13 @@ import { paginateRest } from "@octokit/plugin-paginate-rest";
 import core from "@actions/core";
 import fetch from "node-fetch";
 
-// XXX: Boolean(process.env['CI']) // check if running in a Github Action workflow
-
-const [, , mode] = process.argv;
-
 const MONTH_MILLISECONDS = 1_000 * 60 * 60 * 24 * 30;
 const RTF = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
 const { GITHUB_REPOSITORY, GH_PAT: auth } = process.env;
 const [OWNER, REPOSITORY] = GITHUB_REPOSITORY.split("/");
 
+// INPUTS ---
 const email = core.getInput("EMAIL", { required: true });
 const targetTopics = core
   .getInput("TOPICS", { required: true })
@@ -23,21 +20,22 @@ const repo = core.getInput("REPOSITORY") || REPOSITORY;
 const username = core.getInput("USERNAME") || OWNER;
 const owner = OWNER;
 
+// GitHub API ---
+
+// Octokit instance with paginate plugin
 const octokit = new (Octokit.plugin(paginateRest))({
   auth,
   request: { fetch },
 });
 
-// const write = (data, path) =>
-//   mode === "dev" &&
-//   writeFile(
-//     path,
-//     typeof data === "object" ? JSON.stringify(data, null, 2) : data
-//   );
+// Lists public repositories for the specified user
+const getRepos = () =>
+  octokit.paginate(`GET /users/${username}/repos`, {
+    username,
+    headers: { "X-GitHub-Api-Version": "2022-11-28" },
+  });
 
-// const read = async (path) =>
-//   JSON.parse(await readFile(path, { encoding: "utf8" }));
-
+// Replaces an existing file in a repository
 function updateFile(path, content, sha, message = "updated readme topics") {
   return octokit.request(`PUT /repos/${owner}/${repo}/contents/${path}`, {
     owner,
@@ -50,6 +48,8 @@ function updateFile(path, content, sha, message = "updated readme topics") {
     headers: { "X-GitHub-Api-Version": "2022-11-28" },
   });
 }
+
+// Gets the contents of a file in a repository
 async function getFile(path, contentType = "json") {
   const {
     data: { sha, content },
@@ -68,6 +68,10 @@ async function getFile(path, contentType = "json") {
   };
 }
 
+// Reducers ---
+
+// Reduce to produce a map of topics with their respective repos
+// eg; { "TOPIC_A": [ {repo_a}, {repo_b}, ... ], ... },
 const reduceRepos = (repos) => {
   const reduced = repos
     .filter((x) => x.fork === false && x.archived === false)
@@ -100,6 +104,7 @@ const reduceRepos = (repos) => {
   );
 };
 
+// Reduce to produce the modified changes to be inserted later
 const generateChanges = (outcome) =>
   targetTopics.reduce(
     (acc, cur) => {
@@ -125,6 +130,7 @@ const generateChanges = (outcome) =>
     ["", "## Topics", ""]
   );
 
+// Takes original lines and modified lines and merge them
 const mergeChanges = (originalLines, modifiedLines) =>
   originalLines
     .reduce(
@@ -155,24 +161,17 @@ const mergeChanges = (originalLines, modifiedLines) =>
     )
     .join("\n");
 
-const getRepos = () =>
-  octokit.paginate(`GET /users/${username}/repos`, {
-    username,
-    headers: { "X-GitHub-Api-Version": "2022-11-28" },
-  });
+// ---
 
+// Driver
 async function run() {
   try {
-    core.warning(` ==> running mode: ${mode}`);
-
     console.log(">> inputs:", { username, email, owner, repo, targetTopics });
 
     const repos = await getRepos();
     console.log(" ==> found", repos.length, "repos");
-    // await write(repos, "tmp/repos.json")
 
     const outcome = reduceRepos(repos);
-    // write(outcome, "tmp/outcome.json");
 
     const modifiedLines = generateChanges(outcome);
     console.log("modifiedLines.length:", modifiedLines.length);
@@ -182,7 +181,6 @@ async function run() {
 
     const modified = mergeChanges(content, modifiedLines);
     console.log("modified.length:", modified.split("\n").length);
-    // write(modified, "tmp/modified.md");
 
     await updateFile("README.md", modified, sha);
     core.info("updated README.md ✓");
