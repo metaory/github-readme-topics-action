@@ -1,18 +1,18 @@
 name: github-profile-pinned-action
 description: Update README.md with repos categorized by topic
 inputs:
-  username:
-    description: git username
+  topics:
+    description: list of topics to categorize by, separated by line breaks
     required: true
   email:
     description: git user email address
     required: true
+  username:
+    description: git username
+    required: false
   repository:
     description: the repository to update its readme
-    required: true
-  topics:
-    description: list of topics to categorize by, separated by line breaks
-    required: true
+    required: false
 runs:
   using: "node16"
   main: "dist/index.js"

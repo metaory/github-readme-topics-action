@@ -19,12 +19,14 @@ import fetch from "node-fetch";
 
 const [, , mode = "prod"] = process.argv;
 
-const auth = process.env["GH_PAT"];
-const email = core.getInput("email");
-const repo = core.getInput("repository");
-const username = core.getInput("username");
-const targetTopics = core.getInput("topics").split("\n");
-const owner = username;
+const { GITHUB_REPOSITORY, GITHUB_ACTOR, GH_PAT: auth } = process.env;
+const [OWNER, REPOSITORY] = GITHUB_REPOSITORY.split("/");
+
+const email = core.getInput("email", { required: true });
+const targetTopics = core.getInput("topics", { required: true }).split("\n");
+const repo = core.getInput("repository") || REPOSITORY;
+const username = core.getInput("username") || GITHUB_ACTOR;
+const owner = OWNER;
 
 const octokit = new (Octokit.plugin(paginateRest))({
   auth,
