@@ -11888,7 +11888,6 @@ const mergeChanges = (originalLines, modifiedLines) =>
         if (cur === "<!--START_SECTION:topics-->") {
           acc.modified.push(cur);
           acc.replace = true;
-          return acc;
         }
 
         if (cur === "<!--END_SECTION:topics-->") {
