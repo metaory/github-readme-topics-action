@@ -161,7 +161,6 @@ const mergeChanges = (originalLines, modifiedLines) =>
 
 const getRepos = () =>
   octokit.paginate(`GET /users/${username}/repos`, { username });
-// return isDev ? read("tmp/repos.json")
 
 async function run() {
   try {
@@ -170,13 +169,11 @@ async function run() {
     console.log(">> inputs:", { username, email, owner, repo, targetTopics });
 
     const repos = await getRepos();
-
     console.log(" ==> found", repos.length, "repos");
-
-    // mode === "prod" && (await write(repos, "tmp/repos.json"));
+    // await write(repos, "tmp/repos.json")
 
     const outcome = reduceRepos(repos);
-    write(outcome, "tmp/outcome.json");
+    // write(outcome, "tmp/outcome.json");
 
     const modifiedLines = generateChanges(outcome);
     console.log("modifiedLines.length:", modifiedLines.length);
@@ -185,14 +182,14 @@ async function run() {
     console.log("content.length:", content.length);
 
     const modified = mergeChanges(content, modifiedLines);
-    write(modified, "tmp/modified.md");
     console.log("modified.length:", modified.split("\n").length);
+    // write(modified, "tmp/modified.md");
 
     await updateFile("README.md", modified, sha);
-    core.info("updated readme");
+    core.info("✓ updated README.md");
   } catch (error) {
-    core.setFailed(error.message);
     console.error(error);
+    core.setFailed(error.message);
   }
 }
 

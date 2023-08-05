@@ -38,7 +38,7 @@ jobs:
         env:
           GH_PAT: ${{ secrets.GH_PAT }} # your personal-access-tokens with write permission
         with:
-          # username: metaory # OPTIONAL; the committer username, defaults to current user (GITHUB_ACTOR)
+          # username: metaory # OPTIONAL; the committer username, defaults to repository owner (GITHUB_REPOSITORY_OWNER)
           # repository: playground # OPTIONAL; the repository name to update its readme, defaults to current repository (GITHUB_REPOSITORY)
           email: metaory@gmail.com # REQUIRED; the committer email address
           topics: |- # REQUIRED; list of topics to group by
