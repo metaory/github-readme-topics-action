@@ -11859,7 +11859,7 @@ const reduceRepos = (repos) => {
 const generateChanges = (outcome) =>
   targetTopics.reduce(
     (acc, cur) => {
-      acc.push(...["", `# ${cur.toUpperCase()}`, ""]);
+      acc.push(...["", `### ${cur.toUpperCase()}`, ""]);
 
       acc.push("| Name  | Description | Stargazers | Language | Update |");
       acc.push("| ----- | ----------- | ---------- | -------- | ------ |");
