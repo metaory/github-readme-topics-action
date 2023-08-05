@@ -11758,7 +11758,9 @@ const { GITHUB_REPOSITORY, GH_PAT: auth } = process.env;
 const [OWNER, REPOSITORY] = GITHUB_REPOSITORY.split("/");
 
 const email = core.getInput("EMAIL", { required: true });
-const targetTopics = core.getInput("TOPICS", { required: true }).split("\n");
+const targetTopics = core.getInput("TOPICS", { required: true })
+  .split("\n")
+  .sort();
 const repo = core.getInput("REPOSITORY") || REPOSITORY;
 const username = core.getInput("USERNAME") || OWNER;
 const owner = OWNER;
