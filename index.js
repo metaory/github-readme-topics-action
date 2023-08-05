@@ -163,7 +163,10 @@ const mergeChanges = (originalLines, modifiedLines) =>
     .join("\n");
 
 const getRepos = () =>
-  octokit.paginate(`GET /users/${username}/repos`, { username });
+  octokit.paginate(`GET /users/${username}/repos`, {
+    username,
+    headers: { "X-GitHub-Api-Version": "2022-11-28" },
+  });
 
 async function run() {
   try {
