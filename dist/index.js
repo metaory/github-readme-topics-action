@@ -11753,7 +11753,10 @@ const [, , mode = "prod"] = process.argv;
 const isDev = mode === "dev";
 
 const MONTH_MILLISECONDS = 1000 * 60 * 60 * 24 * 30;
-const RTF = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+const RTF = new Intl.RelativeTimeFormat("en", {
+  numeric: "auto",
+  style: "short",
+});
 
 const { GITHUB_REPOSITORY, GH_PAT: auth } = process.env;
 const [OWNER, REPOSITORY] = GITHUB_REPOSITORY.split("/");
