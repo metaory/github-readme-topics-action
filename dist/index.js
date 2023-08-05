@@ -11752,13 +11752,13 @@ function fixResponseChunkedTransferBadEnding(request, errorCallback) {
 const [, , mode = "prod"] = process.argv;
 const isDev = mode === "dev";
 
-const { GITHUB_REPOSITORY, GITHUB_ACTOR, GH_PAT: auth } = process.env;
+const { GITHUB_REPOSITORY, GH_PAT: auth } = process.env;
 const [OWNER, REPOSITORY] = GITHUB_REPOSITORY.split("/");
 
 const email = core.getInput("email", { required: true });
 const targetTopics = core.getInput("topics", { required: true }).split("\n");
 const repo = core.getInput("repository") || REPOSITORY;
-const username = core.getInput("username") || GITHUB_ACTOR;
+const username = core.getInput("username") || OWNER;
 const owner = OWNER;
 
 const octokit = new (dist_node.Octokit.plugin(plugin_paginate_rest_dist_node.paginateRest))({
