@@ -82,16 +82,9 @@ const reduceRepos = (repos) => {
           updated_at: update,
         } = cur;
 
-        const { topic, match } = topics.reduce(
-          (_acc, _cur) => {
-            const topic = targetTopics.find((x) => x === _cur);
-            if (topic && _acc.match === false) return { topic, match: true };
-            return _acc;
-          },
-          { topic: null, match: false }
-        );
+        const topic = topics.find((x) => targetTopics.includes(x));
 
-        if (match) acc[topic].push({ name, desc, stars, language, update });
+        if (topic) acc[topic].push({ name, desc, stars, language, update });
 
         return acc;
       },
