@@ -34,7 +34,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: metaory/github-profile-pinned-action@master
+      - uses: metaory/github-readme-topics-action@master
         env:
           GH_PAT: ${{ secrets.GH_PAT }} # your personal-access-tokens with write permission
         with:
