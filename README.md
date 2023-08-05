@@ -58,4 +58,4 @@ The above job runs every one week, you can change it as you wish based on the [c
 ## TODOs
 
 - [ ] format date (update column)
-- [ ] add links (name column)
+- [x] add links (name column)

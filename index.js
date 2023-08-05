@@ -9,6 +9,9 @@ import fetch from "node-fetch";
 const [, , mode = "prod"] = process.argv;
 const isDev = mode === "dev";
 
+const DAY_MILLISECONDS = 1000 * 60 * 60 * 24;
+const RTF = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+
 const { GITHUB_REPOSITORY, GH_PAT: auth } = process.env;
 const [OWNER, REPOSITORY] = GITHUB_REPOSITORY.split("/");
 
@@ -121,7 +124,11 @@ const generateChanges = (outcome) =>
 
       outcome[cur].forEach(({ name, desc, stars, language, update }) => {
         const link = `[${name}](https://github.com/${owner}/${name})`;
-        acc.push(`| ${link} | ${desc} | ${stars} | ${language} | ${update} |`);
+        const ago = RTF.format(
+          Math.round((timestamp - new Date().getTime()) / DAY_MILLISECONDS),
+          "day"
+        );
+        acc.push(`| ${link} | ${desc} | ${stars} | ${language} | ${ago} |`);
       });
 
       return acc;
