@@ -11747,20 +11747,17 @@ function fixResponseChunkedTransferBadEnding(request, errorCallback) {
 
 
 
-const MONTH_MILLISECONDS = 1_000 * 60 * 60 * 24 * 30;
-const RTF = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+// INPUTS ---
 
 const { GITHUB_REPOSITORY, GH_PAT: auth } = process.env;
-const [OWNER, REPOSITORY] = GITHUB_REPOSITORY.split("/");
+const [owner, repository] = GITHUB_REPOSITORY.split("/");
 
-// INPUTS ---
 const email = core.getInput("EMAIL", { required: true });
 const targetTopics = core.getInput("TOPICS", { required: true })
   .split("\n")
   .sort();
-const repo = core.getInput("REPOSITORY") || REPOSITORY;
-const username = core.getInput("USERNAME") || OWNER;
-const owner = OWNER;
+const repo = core.getInput("REPOSITORY") || repository;
+const username = core.getInput("USERNAME") || owner;
 
 // GitHub API ---
 
@@ -11846,6 +11843,19 @@ const reduceRepos = (repos) => {
   );
 };
 
+// Get relative months passed since date
+const MONTH_MILLISECONDS = 1_000 * 60 * 60 * 24 * 30;
+
+const RTF = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+
+const getRelativeTimeDiff = (date) =>
+  RTF.format(
+    Math.round(
+      (new Date(date).getTime() - new Date().getTime()) / MONTH_MILLISECONDS
+    ),
+    "month"
+  );
+
 // Reduce to produce the modified changes to be inserted later
 const generateChanges = (outcome) =>
   targetTopics.reduce(
@@ -11857,13 +11867,7 @@ const generateChanges = (outcome) =>
 
       outcome[cur].forEach(({ name, desc, stars, language, update }) => {
         const link = `[${name}](https://github.com/${owner}/${name})`;
-        const ago = RTF.format(
-          Math.round(
-            (new Date(update).getTime() - new Date().getTime()) /
-              MONTH_MILLISECONDS
-          ),
-          "month"
-        );
+        const ago = getRelativeTimeDiff(update);
         acc.push(`| ${link} | ${desc} | ${stars} | ${language} | ${ago} |`);
       });
 
