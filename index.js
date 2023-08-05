@@ -4,13 +4,10 @@ import { paginateRest } from "@octokit/plugin-paginate-rest";
 import core from "@actions/core";
 import fetch from "node-fetch";
 
-const MONTH_MILLISECONDS = 1_000 * 60 * 60 * 24 * 30;
-const RTF = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+// INPUTS ---
 
 const { GITHUB_REPOSITORY, GH_PAT: auth } = process.env;
 const [owner, repository] = GITHUB_REPOSITORY.split("/");
-
-// INPUTS ---
 
 const email = core.getInput("EMAIL", { required: true });
 const targetTopics = core
@@ -105,6 +102,10 @@ const reduceRepos = (repos) => {
 };
 
 // Get relative months passed since date
+const MONTH_MILLISECONDS = 1_000 * 60 * 60 * 24 * 30;
+
+const RTF = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+
 const getRelativeTimeDiff = (date) =>
   RTF.format(
     Math.round(
