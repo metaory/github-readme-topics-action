@@ -11750,6 +11750,7 @@ function fixResponseChunkedTransferBadEnding(request, errorCallback) {
 // XXX: Boolean(process.env['CI']) // check if running in a Github Action workflow
 
 const [, , mode = "prod"] = process.argv;
+const isDev = mode === "dev";
 
 const { GITHUB_REPOSITORY, GITHUB_ACTOR, GH_PAT: auth } = process.env;
 const [OWNER, REPOSITORY] = GITHUB_REPOSITORY.split("/");
@@ -11766,13 +11767,14 @@ const octokit = new (dist_node.Octokit.plugin(plugin_paginate_rest_dist_node.pag
 });
 
 const write = (data, path) =>
-  writeFile(
+  isDev &&
+  (0,promises_namespaceObject.writeFile)(
     path,
     typeof data === "object" ? JSON.stringify(data, null, 2) : data
   );
 
 const read = async (path) =>
-  JSON.parse(await (0,promises_namespaceObject.readFile)(path, { encoding: "utf8" }));
+  JSON.parse(await readFile(path, { encoding: "utf8" }));
 
 function updateFile(path, content, sha, message = "updated readme topics") {
   return octokit.request(`PUT /repos/${owner}/${repo}/contents/${path}`, {
@@ -11803,7 +11805,10 @@ async function getFile(path, contentType = "json") {
       Accept: `application/vnd.github.${contentType}`,
     },
   });
-  return { sha, content: Buffer.from(content, "base64").toString() };
+  return {
+    sha,
+    content: Buffer.from(content, "base64").toString().split("\n"),
+  };
 }
 
 const reduceRepos = (repos) => {
@@ -11897,18 +11902,15 @@ const mergeChanges = (originalLines, modifiedLines) =>
     )
     .join("\n");
 
-const getRepos = () => {
-  const REPOS_URL = `GET /users/${username}/repos`;
-  return mode === "dev"
-    ? read("tmp/repos.json")
-    : octokit.paginate(REPOS_URL, { username });
-};
+const getRepos = () =>
+  octokit.paginate(`GET /users/${username}/repos`, { username });
+// return isDev ? read("tmp/repos.json")
 
 async function run() {
   try {
-    console.log(` ==> running mode: ${mode}`);
+    core.warning(` ==> running mode: ${mode}`);
 
-    console.log(">> inputs:", { username, email, repo, targetTopics });
+    console.log(">> inputs:", { username, email, owner, repo, targetTopics });
 
     const repos = await getRepos();
 
@@ -11917,18 +11919,20 @@ async function run() {
     // mode === "prod" && (await write(repos, "tmp/repos.json"));
 
     const outcome = reduceRepos(repos);
-    // write(outcome, "tmp/outcome.json");
+    write(outcome, "tmp/outcome.json");
 
     const modifiedLines = generateChanges(outcome);
+    console.log("modifiedLines.length:", modifiedLines.length);
 
     const { sha, content } = await getFile("README.md");
+    console.log("content.length:", content.length);
 
-    const originalLines = content.split("\n");
-
-    const modified = mergeChanges(originalLines, modifiedLines);
-    // write(modified, "tmp/modified.md");
+    const modified = mergeChanges(content, modifiedLines);
+    write(modified, "tmp/modified.md");
+    console.log("modified.length:", modified.split("\n").length);
 
     await updateFile("README.md", modified, sha);
+    core.info("updated readme");
   } catch (error) {
     core.setFailed(error.message);
     console.error(error);
