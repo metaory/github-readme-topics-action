@@ -59,4 +59,4 @@ The above job runs every one week, you can change it as you wish based on the [c
 
 - [x] format relative date (update column)
 - [x] add links (name column)
-- [ ] publish a tag release
+- [x] publish a tag release
