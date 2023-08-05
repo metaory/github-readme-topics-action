@@ -11924,6 +11924,8 @@ async function run() {
     console.log("auth:", auth);
 
     const repos = await getRepos();
+    core.info("repos");
+    core.info(repos);
 
     console.log(" ==> found", repos.length, "repos");
 
@@ -11931,15 +11933,25 @@ async function run() {
 
     const outcome = reduceRepos(repos);
     // write(outcome, "tmp/outcome.json");
+    core.info("outcome");
+    core.info(outcome);
 
     const modifiedLines = generateChanges(outcome);
+    core.info("modifiedLines");
+    core.info(modifiedLines);
 
     const { sha, content } = await getFile("README.md");
+    core.info("content");
+    core.info(content);
 
     const originalLines = content.split("\n");
+    core.info("originalLines");
+    core.info(originalLines);
 
     const modified = mergeChanges(originalLines, modifiedLines);
     // write(modified, "tmp/modified.md");
+    core.info("modified");
+    core.info(modified);
 
     await updateFile("README.md", modified, sha);
   } catch (error) {
