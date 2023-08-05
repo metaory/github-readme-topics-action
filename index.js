@@ -44,15 +44,10 @@ function updateFile(path, content, sha, message = "updated readme topics") {
     repo,
     path,
     message,
-    committer: {
-      name: username,
-      email,
-    },
+    committer: { name: username, email },
     content: Buffer.from(content).toString("base64"),
     sha,
-    headers: {
-      "X-GitHub-Api-Version": "2022-11-28",
-    },
+    headers: { "X-GitHub-Api-Version": "2022-11-28" },
   });
 }
 async function getFile(path, contentType = "json") {
@@ -96,24 +91,20 @@ const reduceRepos = (repos) => {
           { topic: null, match: false }
         );
 
-        if (match)
-          acc[topic].push({
-            name,
-            desc,
-            stars,
-            language,
-            update,
-          });
+        if (match) acc[topic].push({ name, desc, stars, language, update });
 
         return acc;
       },
       targetTopics.reduce((acc, cur) => ({ ...acc, [cur]: [] }), {})
     );
 
-  return targetTopics.reduce((acc, cur) => {
-    acc[cur] = reduced[cur].sort((a, b) => b.stars - a.stars);
-    return acc;
-  }, {});
+  return targetTopics.reduce(
+    (acc, cur) => ({
+      ...acc,
+      [cur]: reduced[cur].sort((a, b) => b.stars - a.stars),
+    }),
+    {}
+  );
 };
 
 const generateChanges = (outcome) =>
