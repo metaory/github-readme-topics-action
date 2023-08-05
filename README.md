@@ -4,6 +4,22 @@ GitHub Action to update GitHub profile README.md with categorized repos based on
 
 ---
 
+### Inputs
+
+- `TOPICS`: list of topics to categorize repos by
+- `EMAIL`: git user email address
+- `USERNAME`: _OPTIONAL_; git username; defaults to repository owner
+- `REPOSITORY`: _OPTIONAL_; the repository to update its readme; defaults to current repository
+
+### Features
+
+- Aggregates all user source repos (not forked or archived), and group them by specified provided Topics
+- Sort results based on number of Stars
+- Calculate relative time passed since last update
+- Update the target repository README with the generated content
+
+---
+
 <p align="center">
   <img src="./assets/screenshot.png" width="600" />
 </p>
