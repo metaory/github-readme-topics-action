@@ -2,6 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { Octokit } from "@octokit/core";
 import { paginateRest } from "@octokit/plugin-paginate-rest";
 import core from "@actions/core";
+import fetch from "node-fetch";
 
 // XXX: Boolean(process.env['CI']) // check if running in a Github Action workflow
 
@@ -24,7 +25,10 @@ const repo = "git-playground";
 const username = "metaory";
 const owner = username;
 
-const octokit = new (Octokit.plugin(paginateRest))({ auth });
+const octokit = new (Octokit.plugin(paginateRest))({
+  auth,
+  request: { fetch },
+});
 
 const write = (data, path) =>
   writeFile(
