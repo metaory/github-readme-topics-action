@@ -11803,7 +11803,7 @@ async function getFile(path, contentType = "json") {
   });
   return {
     sha,
-    content: Buffer.from(content, "base64").toString().split("\n"),
+    content: Buffer.from(content, "base64").toString(),
   };
 }
 
@@ -11843,11 +11843,11 @@ const reduceRepos = (repos) => {
   );
 };
 
-// Get relative months passed since date
 const MONTH_MILLISECONDS = 1_000 * 60 * 60 * 24 * 30;
 
 const RTF = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
+// Get relative months passed since date
 const getRelativeTimeDiff = (date) =>
   RTF.format(
     Math.round(
@@ -11877,24 +11877,19 @@ const generateChanges = (outcome) =>
   );
 
 // Takes original lines and modified lines and merge them
-const mergeChanges = (originalLines, modifiedLines) =>
-  originalLines
+const mergeChanges = (original, modifiedLines) =>
+  original
+    .split("\n")
     .reduce(
       (acc, cur, i, arr) => {
-        if (cur === "<!--START_SECTION:topics-->") {
-          acc.modified.push(cur);
-          acc.replace = true;
-        }
+        if (cur === "<!--START_SECTION:topics-->") acc.replace = true;
 
-        if (cur === "<!--END_SECTION:topics-->") {
-          acc.modified.push(cur);
-          acc.replace = false;
-          return acc;
-        }
+        if (cur === "<!--END_SECTION:topics-->") acc.replace = false;
 
         if (acc.replace === false) acc.modified.push(cur);
 
         if (acc.replace === true && acc.done === false) {
+          acc.modified.push(cur);
           modifiedLines.forEach((x) => acc.modified.push(x));
           acc.done = true;
         }
@@ -11920,16 +11915,17 @@ async function run() {
     const outcome = reduceRepos(repos);
 
     const modifiedLines = generateChanges(outcome);
-    console.log("modifiedLines.length:", modifiedLines.length);
 
     const { sha, content } = await getFile("README.md");
-    console.log("content.length:", content.length);
 
     const modified = mergeChanges(content, modifiedLines);
-    console.log("modified.length:", modified.split("\n").length);
 
-    await updateFile("README.md", modified, sha);
-    core.info("updated README.md ✓");
+    if (content !== modified) {
+      core.info("Change detected. saving...");
+      await updateFile("README.md", modified, sha);
+    } else core.info("Everything up-to-date, Nothing to do.");
+
+    core.info("Done ✓");
   } catch (error) {
     console.error(error);
     core.setFailed(error.message);
