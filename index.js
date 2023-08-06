@@ -76,11 +76,11 @@ const reduceRepos = (repos) => {
       (acc, cur) => {
         const {
           name,
-          description: desc,
           topics,
-          stargazers_count: stars,
           language,
-          updated_at: update,
+          description: desc,
+          stargazers_count: stars,
+          pushed_at: update,
         } = cur;
 
         const topic = topics.find((x) => targetTopics.includes(x));
@@ -120,8 +120,8 @@ const generateChanges = (outcome) =>
     (acc, cur) => {
       acc.push(...["", `### ${cur.toUpperCase()}`, ""]);
 
-      acc.push("| Name  | Description | Stargazers | Language | Update |");
-      acc.push("| ----- | ----------- | ---------- | -------- | ------ |");
+      acc.push("| Name  | Description | Stars | Language | Update |");
+      acc.push("| ----- | ----------- | ----- | -------- | ------ |");
 
       outcome[cur].forEach(({ name, desc, stars, language, update }) => {
         const link = `[${name}](https://github.com/${owner}/${name})`;
