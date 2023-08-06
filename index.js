@@ -139,20 +139,14 @@ const mergeChanges = (originalLines, modifiedLines) =>
   originalLines
     .reduce(
       (acc, cur, i, arr) => {
-        if (cur === "<!--START_SECTION:topics-->") {
-          acc.modified.push(cur);
-          acc.replace = true;
-        }
+        if (cur === "<!--START_SECTION:topics-->") acc.replace = true;
 
-        if (cur === "<!--END_SECTION:topics-->") {
-          acc.modified.push(cur);
-          acc.replace = false;
-          return acc;
-        }
+        if (cur === "<!--END_SECTION:topics-->") acc.replace = false;
 
         if (acc.replace === false) acc.modified.push(cur);
 
         if (acc.replace === true && acc.done === false) {
+          acc.modified.push(cur);
           modifiedLines.forEach((x) => acc.modified.push(x));
           acc.done = true;
         }
