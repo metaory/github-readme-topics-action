@@ -1,6 +1,6 @@
 # GitHub Profile Readme Topics Action
 
-GitHub Action to update GitHub profile README.md with categorized repos based on their Topics
+:pushpin: GitHub Action to update GitHub profile README.md with categorized repos based on their Topics
 
 ---
 
